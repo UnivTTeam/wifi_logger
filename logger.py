@@ -67,6 +67,4 @@ with closing(sock):
             print("[Unknown Error]")
             print(e)
 
-print("save log...")
-
 

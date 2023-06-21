@@ -1,0 +1,3 @@
+[submodule "cpp/libwheels"]
+	path = cpp/libwheels
+	url = git@github.com:UnivTTeam/libwheels.git

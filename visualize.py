@@ -1,53 +1,68 @@
 import numpy as np
+import numpy.linalg as LA
 import matplotlib.pyplot as plt
 import sys
+from file_import import load
+
+from odometry import get_odom_param
+
+def Rot(theta):
+    c = np.cos(theta)
+    s = np.sin(theta)
+    return np.array([[c,-s,],[s,c]])
 
 if len(sys.argv) < 2:
     print("usage: python3 visualize.py [filename]")
+    exit()
 
-fname = sys.argv[1]
-T,X,Y,Theta,Vx,Vy,Omega = [np.zeros((0)) for _ in range(7)]
-Step = np.array([], dtype=int)
-Pwms,WheelOmegas = [np.zeros((0,4)) for _ in range(2)]
+(
+    t, step,
+    x, y, theta,
+    vx, vy, omega,
+    pwms, wheel_omegas, wheel_omegas_raw
+) = load(sys.argv[1])
+n = max(step)+1
 
-for l in open(fname, "r").readlines():
-    l = l.rstrip("\n")
-    l = l.split()
-    if len(l) != 16:
-        continue
+if False:
+    for i in range(0, n):
+        plt.plot(x[step==i], y[step==i])
+    plt.show()
 
-    pwms = [0,0,0,0]
-    wheel_omegas = [0,0,0,0]
-    t,step, \
-        x,y,theta, \
-        vx,vy,omega, \
-        pwms[0],pwms[1],pwms[2],pwms[3], \
-        wheel_omegas[0],wheel_omegas[1],wheel_omegas[2],wheel_omegas[3] \
-        = map(float, l)
-    step = int(step)
+if False:
+    fig = plt.figure()
+    for w in range(4):
+        ax = fig.add_subplot(4, 1, w+1)
+        for i in range(0, n):
+            ax.plot(t[step==i], pwms[step==i, w])
+    plt.show()
 
-    T = np.append(T, t)
-    Step = np.append(Step, step)
-    X = np.append(X, x)
-    Y = np.append(Y, y)
-    Theta = np.append(Theta, theta)
-    Vx = np.append(Vx, vx)
-    Vy = np.append(Vy, vy)
-    Omega = np.append(Omega, omega)
-    Pwms = np.append(Pwms, pwms)
-    WheelOmegas = np.append(WheelOmegas, wheel_omegas)
+if False:
+    fig = plt.figure()
+    for w in range(4):
+        ax = fig.add_subplot(4, 1, w+1)
+        for i in range(0, n):
+            ax.plot(t[step==i], wheel_omegas_raw[step==i, w])
+    plt.show()
 
-t = np.array(T)
-step = np.array(Step)
-x = np.array(X)
-y = np.array(Y)
-theta = np.array(Theta)
-vx = np.array(Vx)
-vy = np.array(Vy)
-omega = np.array(Omega)
-pwms = np.array(Pwms)
-wheel_omegas = np.array(WheelOmegas)
+if False:
+    fig = plt.figure()
+    v = np.array([vx, vy]).T
+    for w in range(2):
+        ax = fig.add_subplot(4, 1, w+1)
+        for i in range(0, n):
+            ax.plot(t[step==i], v[step==i, w])
+    plt.show()
 
-for i in range(0, max(Step)+1):
-    plt.plot(x[i==step], y[i==step])
-plt.show()
+if False:
+    r = np.zeros(2)
+    A = get_odom_param()
+    Ainv = LA.pinv(A)
+    R = []
+    for i in range(len(t)):
+        vx,vy,omega = Ainv@wheel_omegas_raw[i]
+        r += Rot(theta[i])@np.array([vx, vy])
+        R.append(np.array(r))
+    a,b = np.array(R).T
+    plt.plot(a,b)
+    plt.show()
+
