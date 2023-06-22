@@ -3,8 +3,13 @@ import queue
 import threading
 import time
 import numpy as np
+import sys
 
 from file_import import load
+
+if len(sys.argv) < 2:
+    print("usage: python3 visualize.py [filename]")
+    exit()
 
 colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
     '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
@@ -55,7 +60,7 @@ if __name__ == '__main__':
         t, step,
         x, y, theta,
         vx, vy, omega,
-    ) = load("result_20230623_031519.csv")
+    ) = load(sys.argv[1])
     v = Visualizer()
 
     def data_loader():
