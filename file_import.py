@@ -3,7 +3,7 @@ import numpy as np
 def load(fname):
     T,X,Y,Theta,Vx,Vy,Omega = [np.zeros((0)) for _ in range(7)]
     Step = np.array([], dtype=int)
-    Pwms,WheelOmegas = [np.zeros((0,4)) for _ in range(2)]
+    WheelOmegas = np.zeros((0,4))
 
     for l in open(fname, "r").readlines():
         l = l.rstrip("\n")
@@ -11,12 +11,10 @@ def load(fname):
         if len(l) != 16:
             continue
 
-        pwms = np.zeros(4)
         wheel_omegas = np.zeros(4)
         t,step, \
             x,y,theta, \
             vx,vy,omega, \
-            pwms[0],pwms[1],pwms[2],pwms[3], \
             wheel_omegas[0],wheel_omegas[1],wheel_omegas[2],wheel_omegas[3] \
             = map(float, l)
         step = int(step)
@@ -29,7 +27,6 @@ def load(fname):
         Vx = np.append(Vx, vx)
         Vy = np.append(Vy, vy)
         Omega = np.append(Omega, omega)
-        Pwms = np.append(Pwms, np.array([pwms]), axis=0)
         WheelOmegas = np.append(WheelOmegas, np.array([wheel_omegas]), axis=0)
 
     t = np.array(T)
@@ -40,7 +37,6 @@ def load(fname):
     vx = np.array(Vx)
     vy = np.array(Vy)
     omega = np.array(Omega)
-    pwms = np.array(Pwms)
     wheel_omegas = np.array(WheelOmegas)
 
     last_wheel_omegas = np.zeros(4)
@@ -54,5 +50,5 @@ def load(fname):
         t, step,
         x, y, theta,
         vx, vy, omega,
-        pwms, wheel_omegas, wheel_omegas_raw
+        wheel_omegas, wheel_omegas_raw
     )

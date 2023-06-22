@@ -23,6 +23,7 @@ with closing(sock):
         try:
             data, addr = sock.recvfrom(1024)
             str_data = data.decode("utf-8", errors="ignore")
+            print(len(str_data))
             
             str_data = str_data[:str_data.find('}')+1]
 
@@ -31,15 +32,13 @@ with closing(sock):
             list1 = list(dic.values())
 
             t = float(dic['t'])
-            step = int(dic['s'])
+            step = int(dic['step'])
             x = float(dic['x'])
             y = float(dic['y'])
-            theta = float(dic['th'])
+            theta = float(dic['theta'])
             vx = float(dic['vx'])
             vy = float(dic['vy'])
-            omega = float(dic['om'])
-            pwms = [float(dic['p'+str(i)]) for i in range(4)]
-            wheel_omegas = [float(dic['om'+str(i)]) for i in range(4)]
+            omega = float(dic['omega'])
 
             step_str = "  "
             if step >= 0:
@@ -55,8 +54,6 @@ with closing(sock):
                 t,step,
                 x,y,theta,
                 vx,vy,omega,
-                pwms[0],pwms[1],pwms[2],pwms[3],
-                wheel_omegas[0],wheel_omegas[1],wheel_omegas[2],wheel_omegas[3],
                 file=ofile
             )
 

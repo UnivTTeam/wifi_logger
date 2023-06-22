@@ -19,21 +19,13 @@ if len(sys.argv) < 2:
     t, step,
     x, y, theta,
     vx, vy, omega,
-    pwms, wheel_omegas, wheel_omegas_raw
+    wheel_omegas, wheel_omegas_raw
 ) = load(sys.argv[1])
 n = max(step)+1
 
 if False:
     for i in range(0, n):
         plt.plot(x[step==i], y[step==i])
-    plt.show()
-
-if False:
-    fig = plt.figure()
-    for w in range(4):
-        ax = fig.add_subplot(4, 1, w+1)
-        for i in range(0, n):
-            ax.plot(t[step==i], pwms[step==i, w])
     plt.show()
 
 if False:
@@ -53,16 +45,17 @@ if False:
             ax.plot(t[step==i], v[step==i, w])
     plt.show()
 
-if False:
+if True:
     r = np.zeros(2)
-    A = get_odom_param()
+    A = get_odom_param()[:,:2]
     Ainv = LA.pinv(A)
     R = []
     for i in range(len(t)):
-        vx,vy,omega = Ainv@wheel_omegas_raw[i]
-        r += Rot(theta[i])@np.array([vx, vy])
+        v = (Ainv@wheel_omegas[i])[:2]
+        r += Rot(theta[i])@v
         R.append(np.array(r))
     a,b = np.array(R).T
-    plt.plot(a,b)
+    for i in range(0, n):
+        plt.plot(a[step==i], b[step==i])
     plt.show()
 
