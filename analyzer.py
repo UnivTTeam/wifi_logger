@@ -2,8 +2,8 @@ import numpy as np
 import numpy.linalg as LA
 import matplotlib.pyplot as plt
 import sys
-
 from file_import import load
+
 from odometry import get_odom_param
 
 def Rot(theta):
@@ -22,19 +22,12 @@ if len(sys.argv) < 2:
 ) = load(sys.argv[1])
 n = max(step)+1
 
-if True:
-    plt.gca().set_aspect('equal')
-    plt.xlim([-6500, 500])
-    plt.ylim([-500, 6500])
-    for i in range(0, n):
-        plt.plot(x[step==i], y[step==i])
-    plt.show()
+s = -1
+r = np.zeros(2)
 
-if False:
-    fig = plt.figure()
-    v = np.array([vx, vy, omega]).T
-    for w in range(3):
-        ax = fig.add_subplot(3, 1, w+1)
-        for i in range(0, n):
-            ax.plot(t[step==i], v[step==i, w])
-    plt.show()
+for i in range(len(step)):
+    if step[i] != s:
+        R = np.array([x[i], y[i]])
+        print(s, R - r)
+        s = step[i]
+        r = np.array(R)
